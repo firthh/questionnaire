@@ -9,11 +9,10 @@
 (def account {:name "Hugo"})
 (def account-response {:id 1 :name "Hugo"})
 (def account-json (json/write-str account))
-(def account-response-json (json/write-str account-reponse))
+(def account-response-json (json/write-str account-response))
 
 (facts "routes"
        (facts "accounts"
-
               (fact "status"
                     (-> (mock/request :post "/account" account-json)
                         (mock/content-type "application/json")
