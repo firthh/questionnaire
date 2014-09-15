@@ -1,21 +1,43 @@
 (ns clojure-api-seed.test.handler
   (:use midje.sweet)
   (:require [clojure-api-seed.handler :refer :all]
+            [clojure-api-seed.database :as db]
             [ring.mock.request :as mock]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            ))
 
-(def valid-account
-  "{\"nick-name\":\"hugo\"}")
+(def account {:name "Hugo"})
+(def account-response {:id 1 :name "Hugo"})
+(def account-json (json/write-str account))
+(def account-response-json (json/write-str account-reponse))
 
 (facts "routes"
        (facts "accounts"
-              (let [response (app (mock/request :post "/account" valid-account))]
-                (fact "status"
-                      (:status response) => 200)
-                (fact "body"
-                      (slurp (:body response)) => valid-account)
-                (fact "content type"
-                      (get (:headers response) "Content-Type") => "application/json")))
+
+              (fact "status"
+                    (-> (mock/request :post "/account" account-json)
+                        (mock/content-type "application/json")
+                        app
+                        :status) => 200
+                    (provided
+                     (db/insert-account anything) => {}))
+
+              (fact "body"
+                    (-> (mock/request :post "/account" account-json)
+                        (mock/content-type "application/json")
+                        app
+                        :body) => account-response-json
+                    (provided
+                     (db/insert-account {:name "Hugo"}) => account-response))
+              (fact "content type"
+                    (-> (mock/request :post "/account" account-json)
+                        (mock/content-type "application/json")
+                        app
+                        :headers
+                        (get "Content-Type")) => "application/json"
+
+                    (provided
+                     (db/insert-account {:name "Hugo"}) => {})))
        (facts "main route"
               (let [response (app (mock/request :get "/"))]
                 (fact "status"

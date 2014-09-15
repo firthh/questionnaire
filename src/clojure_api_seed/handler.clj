@@ -5,12 +5,14 @@
             [compojure.route :as route]
             [ring.util.response :refer :all]
             [ring.middleware.defaults :refer :all]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [clojure-api-seed.database :as db]))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
   (POST "/account" {body :body}
-        (content-type (response body) "application/json"))
+        (let [insert-result (db/insert-account body)]
+          (content-type (response insert-result) "application/json")))
   (route/resources "/")
   (route/not-found "Not Found"))
 
