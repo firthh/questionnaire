@@ -10,7 +10,7 @@
 (def questions (atom []))
 
 (defroutes app-routes
-  (GET "/" [] "Hello World")
+  (GET "/" [] (redirect "/index.html"))
   (GET "/questions.json" []
        (do
          (content-type (response @questions) "application/json")))
