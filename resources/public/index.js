@@ -4,7 +4,7 @@ var data = [
     {author: "Jordan Walke", text: "This is *another* comment"}
 ];
 
-var Questionare = React.createClass({
+var Questionnaire = React.createClass({
     getInitialState: function() {
         return {data: []};
     },
@@ -20,16 +20,16 @@ var Questionare = React.createClass({
             }.bind(this)
         });
     },
-    handleAddNewQuestion : function(comment) {
-        var comments = this.state.data;
-        var newComments = comments.concat([comment]);
-        this.setState({data: newComments});
+    handleAddNewQuestion : function(question) {
+        var questions = this.state.data;
+        var newQuestions = questions.concat([question]);
+        this.setState({data: newQuestions});
         $.ajax({
             url: this.props.url,
             dataType: 'json',
             contentType: 'application/json',
             type: 'POST',
-            data: JSON.stringify(comment),
+            data: JSON.stringify(question),
             success: function(data) {
                 this.setState({data: data});
             }.bind(this),
@@ -44,10 +44,10 @@ var Questionare = React.createClass({
     },
     render: function() {
         return (
-                <div className="commentBox">
+                <div className="questionare">
                 <h1>Questions</h1>
                 <QuestionList data={this.state.data}/>
-                <NewQuestion onCommentSubmit={this.handleAddNewQuestion}/>
+                <NewQuestion onAddQuestionSubmit={this.handleAddNewQuestion}/>
                 </div>
         );
     }
@@ -61,7 +61,7 @@ var QuestionList = React.createClass({
             );
         });
         return (
-                <div className="commentList">
+                <div className="questionList">
                 {commentNodes}
                 </div>
         );
@@ -71,8 +71,8 @@ var QuestionList = React.createClass({
 var Question = React.createClass({
     render: function() {
         return (
-                <div className="comment">
-                <h2 className="commentAuthor">{this.props.author}</h2>
+                <div className="question">
+                <h2 className="questionAuthor">{this.props.author}</h2>
                 {this.props.children}
             </div>
         );
@@ -87,7 +87,7 @@ var NewQuestion = React.createClass({
         if (!text || !author) {
             return;
         }
-        this.props.onCommentSubmit({author: author, text: text});
+        this.props.onAddQuestionSubmit({author: author, text: text});
         this.refs.author.getDOMNode().value = '';
         this.refs.text.getDOMNode().value = '';
         return;
@@ -105,6 +105,6 @@ var NewQuestion = React.createClass({
 });
 
 React.renderComponent(
-        <Questionare url="questions.json" pollInterval={2000} />,
+        <Questionnaire url="questions.json" pollInterval={2000} />,
     document.getElementById('content')
 );
