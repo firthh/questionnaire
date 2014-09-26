@@ -79,30 +79,41 @@ var Question = React.createClass({
     }
 });
 
+var Answer = React.createClass({
+    render: function() {
+        return (
+                <div>
+                {this.props.text}
+            </div>
+        );
+    }
+});
+
 var NewAnswerList = React.createClass({
     getInitialState: function() {
         return { answers: [] };
     },
     getValue: function(){
-        return this.props.children.map(function(answer){
-            return answer.getValue();
-        });
+        return this.state.answers;
     },
-    handleNewAnswer: function (){
-        var newAnswers = this.state.answers.concat({});
+    clearState: function() {
+        this.setState( { answers: [] } );
+    },
+    handleNewAnswer: function (answer){
+        var newAnswers = this.state.answers.concat(answer);
         this.setState({answers: newAnswers});
     },
     render: function() {
         var answers = this.state.answers.map(function(answer){
             return (
-                    <NewAnswer />
+                    <Answer text={answer}/>
             );
         });
         return (
                 <div className="answerList">
                 {answers}
                 <div>
-                <input type="button" text="new answer" value="new answer" onClick={this.handleNewAnswer}/>
+                <NewAnswer handleNewAnswer={this.handleNewAnswer} />
                 </div>
                 </div>
         );
@@ -110,27 +121,26 @@ var NewAnswerList = React.createClass({
 });
 
 var NewAnswer = React.createClass({
-    getValue: function() {
-        return this.refs.answer.getDOMNode().value.trim();
+    handleNewAnswer: function() {
+        var text = this.refs.answer.getDOMNode().value.trim();
+        if(!text) { return; }
+        this.props.handleNewAnswer({ text: text });
+        this.refs.answer.getDOMNode().value = '';
+        return;
     },
     render: function() {
         return(
+                <div>
                 <input type="text" placeholder="answer" ref="answer" />
+                <input type="button" text="new answer" value="new answer" onClick={this.handleNewAnswer}/>
+                </div>
         );
     }
 });
 
 var NewQuestion = React.createClass({
-    getInitialState: function() {
-        return({
-            author:"",
-            text:"",
-            answers:[]
-        });
-    },
     handleSubmit: function(e) {
         e.preventDefault();
-        alert(this.refs.answers.getValue());
         var author = this.refs.author.getDOMNode().value.trim();
         var text = this.refs.text.getDOMNode().value.trim();
         if (!text || !author) {
@@ -139,6 +149,7 @@ var NewQuestion = React.createClass({
         this.props.onAddQuestionSubmit({author: author, text: text});
         this.refs.author.getDOMNode().value = '';
         this.refs.text.getDOMNode().value = '';
+        this.refs.answers.clearState();
         return;
     },
 
@@ -148,7 +159,6 @@ var NewQuestion = React.createClass({
                 <input type="text" placeholder="Your name" ref="author" />
                 <input type="text" placeholder="Say something..." ref="text" />
                 <input type="submit" value="Post" />
-                <NewAnswer ref="answer" />
                 <NewAnswerList ref="answers"/>
                 </form>
         );
