@@ -5,14 +5,17 @@
             [compojure.route :as route]
             [ring.util.response :refer :all]
             [ring.middleware.defaults :refer :all]
-            [clojure.data.json :as json]
-            [clojure-api-seed.database :as db]))
+            [clojure.data.json :as json]))
+
+(def comments (atom []))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (POST "/account" {body :body}
-        (let [insert-result (db/insert-account body)]
-          (content-type (response insert-result) "application/json")))
+  (GET "/comments.json" [] (content-type (response @comments) "application/json"))
+  (POST "/comments.json" {body :body}
+        (do
+          (swap! comments conj body)
+          (content-type (response @comments) "application/json")))
   (route/resources "/")
   (route/not-found "Not Found"))
 
