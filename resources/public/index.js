@@ -55,9 +55,9 @@ var Questionnaire = React.createClass({
 
 var QuestionList = React.createClass({
     render: function() {
-        var commentNodes = this.props.data.map(function(comment) {
+        var commentNodes = this.props.data.map(function(question) {
             return(
-                <Question author={comment.author}>{comment.text}</Question>
+                <Question author={question.author} answers={question.answers}>{question.text}</Question>
             );
         });
         return (
@@ -70,10 +70,21 @@ var QuestionList = React.createClass({
 
 var Question = React.createClass({
     render: function() {
+        var answers = "";
+        if(this.props.answers) {
+            answers = this.props.answers.map(function(answer){
+                return (
+                        <li>{answer.text}</li>
+                );
+            });
+        }
         return (
                 <div className="question">
                 <h2 className="questionAuthor">{this.props.author}</h2>
                 {this.props.children}
+                <ul>
+                {answers}
+            </ul>
             </div>
         );
     }
@@ -146,7 +157,7 @@ var NewQuestion = React.createClass({
         if (!text || !author) {
             return;
         }
-        this.props.onAddQuestionSubmit({author: author, text: text});
+        this.props.onAddQuestionSubmit({author: author, text: text, answers: this.refs.answers.getValue()});
         this.refs.author.getDOMNode().value = '';
         this.refs.text.getDOMNode().value = '';
         this.refs.answers.clearState();
@@ -157,7 +168,7 @@ var NewQuestion = React.createClass({
         return (
                 <form className="commentForm" onSubmit={this.handleSubmit}>
                 <input type="text" placeholder="Your name" ref="author" />
-                <input type="text" placeholder="Say something..." ref="text" />
+                <input type="text" placeholder="Your question..." ref="text" />
                 <input type="submit" value="Post" />
                 <NewAnswerList ref="answers"/>
                 </form>

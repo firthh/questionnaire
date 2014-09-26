@@ -7,15 +7,18 @@
             [ring.middleware.defaults :refer :all]
             [clojure.data.json :as json]))
 
-(def comments (atom []))
+(def questions (atom []))
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/questions.json" [] (content-type (response @comments) "application/json"))
+  (GET "/questions.json" []
+       (do
+         (content-type (response @questions) "application/json")))
   (POST "/questions.json" {body :body}
         (do
-          (swap! comments conj body)
-          (content-type (response @comments) "application/json")))
+          ;; (println body)
+          (swap! questions conj body)
+          (content-type (response @questions) "application/json")))
   (route/resources "/")
   (route/not-found "Not Found"))
 
