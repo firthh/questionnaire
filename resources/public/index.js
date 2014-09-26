@@ -4,11 +4,11 @@ var data = [
     {author: "Jordan Walke", text: "This is *another* comment"}
 ];
 
-var CommentBox = React.createClass({
+var Questionare = React.createClass({
     getInitialState: function() {
         return {data: []};
     },
-    loadCommentsFromServer: function() {
+    loadQuestionsFromServer: function() {
         $.ajax({
             url: this.props.url,
             dataType: 'json',
@@ -20,7 +20,7 @@ var CommentBox = React.createClass({
             }.bind(this)
         });
     },
-    handleCommentSubmit: function(comment) {
+    handleAddNewQuestion : function(comment) {
         var comments = this.state.data;
         var newComments = comments.concat([comment]);
         this.setState({data: newComments});
@@ -39,25 +39,25 @@ var CommentBox = React.createClass({
         });
     },
     componentDidMount: function() {
-        this.loadCommentsFromServer();
-        setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+        this.loadQuestionsFromServer();
+        setInterval(this.loadQuestionsFromServer, this.props.pollInterval);
     },
     render: function() {
         return (
                 <div className="commentBox">
-                <h1>Comments</h1>
-                <CommentList data={this.state.data}/>
-                <CommentForm onCommentSubmit={this.handleCommentSubmit}/>
+                <h1>Questions</h1>
+                <QuestionList data={this.state.data}/>
+                <NewQuestion onCommentSubmit={this.handleAddNewQuestion}/>
                 </div>
         );
     }
 });
 
-var CommentList = React.createClass({
+var QuestionList = React.createClass({
     render: function() {
         var commentNodes = this.props.data.map(function(comment) {
             return(
-                <Comment author={comment.author}>{comment.text}</Comment>
+                <Question author={comment.author}>{comment.text}</Question>
             );
         });
         return (
@@ -68,7 +68,7 @@ var CommentList = React.createClass({
     }
 });
 
-var Comment = React.createClass({
+var Question = React.createClass({
     render: function() {
         return (
                 <div className="comment">
@@ -79,7 +79,7 @@ var Comment = React.createClass({
     }
 });
 
-var CommentForm = React.createClass({
+var NewQuestion = React.createClass({
     handleSubmit: function(e) {
         e.preventDefault();
         var author = this.refs.author.getDOMNode().value.trim();
@@ -105,6 +105,6 @@ var CommentForm = React.createClass({
 });
 
 React.renderComponent(
-        <CommentBox url="comments.json" pollInterval={2000} />,
+        <Questionare url="questions.json" pollInterval={2000} />,
     document.getElementById('content')
 );

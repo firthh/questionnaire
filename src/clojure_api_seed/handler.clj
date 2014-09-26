@@ -11,8 +11,8 @@
 
 (defroutes app-routes
   (GET "/" [] "Hello World")
-  (GET "/comments.json" [] (content-type (response @comments) "application/json"))
-  (POST "/comments.json" {body :body}
+  (GET "/questions.json" [] (content-type (response @comments) "application/json"))
+  (POST "/questions.json" {body :body}
         (do
           (swap! comments conj body)
           (content-type (response @comments) "application/json")))
