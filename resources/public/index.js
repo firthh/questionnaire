@@ -80,7 +80,33 @@ var Question = React.createClass({
 });
 
 var NewAnswerList = React.createClass({
-
+    getInitialState: function() {
+        return { answers: [] };
+    },
+    getValue: function(){
+        return this.props.children.map(function(answer){
+            return answer.getValue();
+        });
+    },
+    handleNewAnswer: function (){
+        var newAnswers = this.state.answers.concat({});
+        this.setState({answers: newAnswers});
+    },
+    render: function() {
+        var answers = this.state.answers.map(function(answer){
+            return (
+                    <NewAnswer />
+            );
+        });
+        return (
+                <div className="answerList">
+                {answers}
+                <div>
+                <input type="button" text="new answer" value="new answer" onClick={this.handleNewAnswer}/>
+                </div>
+                </div>
+        );
+    }
 });
 
 var NewAnswer = React.createClass({
@@ -104,7 +130,7 @@ var NewQuestion = React.createClass({
     },
     handleSubmit: function(e) {
         e.preventDefault();
-        alert(this.refs.answer.getValue());
+        alert(this.refs.answers.getValue());
         var author = this.refs.author.getDOMNode().value.trim();
         var text = this.refs.text.getDOMNode().value.trim();
         if (!text || !author) {
@@ -123,6 +149,7 @@ var NewQuestion = React.createClass({
                 <input type="text" placeholder="Say something..." ref="text" />
                 <input type="submit" value="Post" />
                 <NewAnswer ref="answer" />
+                <NewAnswerList ref="answers"/>
                 </form>
         );
     }
