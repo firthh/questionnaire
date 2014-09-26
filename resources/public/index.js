@@ -79,9 +79,32 @@ var Question = React.createClass({
     }
 });
 
+var NewAnswerList = React.createClass({
+
+});
+
+var NewAnswer = React.createClass({
+    getValue: function() {
+        return this.refs.answer.getDOMNode().value.trim();
+    },
+    render: function() {
+        return(
+                <input type="text" placeholder="answer" ref="answer" />
+        );
+    }
+});
+
 var NewQuestion = React.createClass({
+    getInitialState: function() {
+        return({
+            author:"",
+            text:"",
+            answers:[]
+        });
+    },
     handleSubmit: function(e) {
         e.preventDefault();
+        alert(this.refs.answer.getValue());
         var author = this.refs.author.getDOMNode().value.trim();
         var text = this.refs.text.getDOMNode().value.trim();
         if (!text || !author) {
@@ -99,6 +122,7 @@ var NewQuestion = React.createClass({
                 <input type="text" placeholder="Your name" ref="author" />
                 <input type="text" placeholder="Say something..." ref="text" />
                 <input type="submit" value="Post" />
+                <NewAnswer ref="answer" />
                 </form>
         );
     }
