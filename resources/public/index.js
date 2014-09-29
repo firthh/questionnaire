@@ -20,31 +20,17 @@ var Questionnaire = React.createClass({
         var questions = this.state.data;
         var newQuestions = questions.concat([question]);
         this.setState({data: newQuestions});
-        $.ajax({
-            url: this.props.url,
-            dataType: 'json',
-            contentType: 'application/json',
-            type: 'POST',
-            data: JSON.stringify(question),
-            success: function(data) {
-                this.setState({data: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(this.props.url, status, err.toString());
-            }.bind(this)
-        });
     },
     componentDidMount: function() {
         this.loadQuestionsFromServer();
-        setInterval(this.loadQuestionsFromServer, this.props.pollInterval);
     },
     render: function() {
         return (
-                <div className="questionare">
+                <form className="questionare">
                 <h1>Questions</h1>
                 <QuestionList data={this.state.data}/>
-                <NewQuestion onAddQuestionSubmit={this.handleAddNewQuestion}/>
-                </div>
+                <input type="submit" text="submit" value="submit" />
+                </form>
         );
     }
 });
@@ -66,16 +52,15 @@ var QuestionList = React.createClass({
 
 var Question = React.createClass({
     render: function() {
+        var id = this.props.id;
         var answers = this.props.answers.map(function(answer){
             return (
-                    <div>
-                    <input type="checkbox" />{answer.text}
-                    </div>
+                    <Answer question={id} id={answer.id}>{answer.text}</Answer>
             );
         });
         return (
                 <div className="question">
-                <h2 className="questionAuthor">{this.props.id}. {this.props.children}?</h2>
+                <h2 className="questionAuthor">{this.props.id} {this.props.children}</h2>
                 <p>{this.props.author}</p>
                 {answers}
                 </div>
@@ -83,6 +68,15 @@ var Question = React.createClass({
     }
 });
 
+var Answer = React.createClass({
+    render: function() {
+        return (
+                <div>
+                <input type="radio" name={this.props.question} value={this.props.id}/>{this.props.children}
+                </div>
+        );
+    }
+});
 
 React.renderComponent(
         <Questionnaire url="questions.json" pollInterval={2000} />,
