@@ -53,7 +53,7 @@ var QuestionList = React.createClass({
     render: function() {
         var commentNodes = this.props.data.map(function(question) {
             return(
-                <Question author={question.author} answers={question.answers}>{question.text}</Question>
+                <Question id={question.id} author={question.author} answers={question.answers}>{question.text}</Question>
             );
         });
         return (
@@ -66,22 +66,19 @@ var QuestionList = React.createClass({
 
 var Question = React.createClass({
     render: function() {
-        var answers = "";
-        if(this.props.answers) {
-            answers = this.props.answers.map(function(answer){
-                return (
-                        <li>{answer.text}</li>
-                );
-            });
-        }
+        var answers = this.props.answers.map(function(answer){
+            return (
+                    <div>
+                    <input type="checkbox" />{answer.text}
+                    </div>
+            );
+        });
         return (
                 <div className="question">
-                <h2 className="questionAuthor">{this.props.author}</h2>
-                {this.props.children}
-                <ul>
+                <h2 className="questionAuthor">{this.props.id}. {this.props.children}?</h2>
+                <p>{this.props.author}</p>
                 {answers}
-            </ul>
-            </div>
+                </div>
         );
     }
 });
@@ -90,8 +87,8 @@ var Answer = React.createClass({
     render: function() {
         return (
                 <div>
-                {this.props.text}
-            </div>
+                {this.props.id}. {this.props.children}
+                </div>
         );
     }
 });
@@ -107,13 +104,14 @@ var NewAnswerList = React.createClass({
         this.setState( { answers: [] } );
     },
     handleNewAnswer: function (answer){
+        answer.id = this.state.answers.length + 1;
         var newAnswers = this.state.answers.concat(answer);
         this.setState({answers: newAnswers});
     },
     render: function() {
         var answers = this.state.answers.map(function(answer){
             return (
-                    <Answer text={answer}/>
+                    <Answer id={answer.id}>{answer.text}</Answer>
             );
         });
         return (
@@ -150,10 +148,12 @@ var NewQuestion = React.createClass({
         e.preventDefault();
         var author = this.refs.author.getDOMNode().value.trim();
         var text = this.refs.text.getDOMNode().value.trim();
-        if (!text || !author) {
+        var answers = this.refs.answers.getValue();
+        console.log(answers);
+        if (!text || !author || (answers.length === 0)) {
             return;
         }
-        this.props.onAddQuestionSubmit({author: author, text: text, answers: this.refs.answers.getValue()});
+        this.props.onAddQuestionSubmit({author: author, text: text, answers: answers});
         this.refs.author.getDOMNode().value = '';
         this.refs.text.getDOMNode().value = '';
         this.refs.answers.clearState();

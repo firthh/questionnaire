@@ -9,6 +9,7 @@
 
 (def questions (atom []))
 
+
 (defroutes app-routes
   (GET "/" [] (redirect "/index.html"))
   (GET "/questions.json" []
@@ -17,8 +18,9 @@
   (POST "/questions.json" {body :body}
         (do
           ;; (println body)
-          (swap! questions conj body)
-          (content-type (response @questions) "application/json")))
+          (let [question (assoc body :id (inc (count @questions)))]
+            (swap! questions conj question)
+            (content-type (response @questions) "application/json"))))
   (route/resources "/")
   (route/not-found "Not Found"))
 
