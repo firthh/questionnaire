@@ -17,7 +17,7 @@
          (content-type (response @questions) "application/json")))
   (POST "/questions.json" {body :body}
         (do
-          ;; (println body)
+          (println body)
           (let [question (assoc body :id (inc (count @questions)))]
             (swap! questions conj question)
             (content-type (response @questions) "application/json"))))

@@ -61,6 +61,21 @@ var NewAnswer = React.createClass({
 });
 
 var NewQuestion = React.createClass({
+    submitQuestion :function(question, onSuccess){
+        $.ajax({
+            url: this.props.url,
+            dataType: 'json',
+            contentType: 'application/json',
+            type: 'POST',
+            data: JSON.stringify(question),
+            success: function(data) {
+                onSuccess(question);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(this.props.url, status, err.toString());
+            }.bind(this)
+        });
+    },
     handleSubmit: function(e) {
         e.preventDefault();
         var author = this.refs.author.getDOMNode().value.trim();
@@ -70,7 +85,7 @@ var NewQuestion = React.createClass({
         if (!text || !author || (answers.length === 0)) {
             return;
         }
-        this.props.onAddQuestionSubmit({author: author, text: text, answers: answers});
+        this.submitQuestion({author: author, text: text, answers: answers}, this.props.onAddQuestionSubmit);
         this.refs.author.getDOMNode().value = '';
         this.refs.text.getDOMNode().value = '';
         this.refs.answers.clearState();
